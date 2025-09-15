@@ -1,3 +1,5 @@
+# Tugas 2
+
 Link aplikasi PWS: https://sean-marcello-footballshop.pbp.cs.ui.ac.id/
 
 1. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step.
@@ -38,3 +40,5 @@ Migrasi dilakukan untuk menyesuaikan perubahan pada model di models.py dengan st
 Django sering dijadikan framework pertama dalam pembelajaran pengembangan perangkat lunak karena fiturnya yang lengkap dan mudah dipahami. Django telah menyediakan berbagai kebutuhan dasar seperti routing, autentikasi, dan pengelolaan basis data, sehingga kita tidak perlu membangun semuanya dari awal. Strukturnya yang menggunakan Model–Template–View membantu memisahkan bagian data, logika, dan tampilan secara jelas. Selain itu, Django menggunakan bahasa Python yang memiliki sintaks sederhana sehingga lebih mudah dipelajari oleh mahasiswa. Ditambah lagi, dokumentasinya sangat baik, komunitasnya luas, serta banyak digunakan di industri besar, sehingga pembelajaran Django tidak hanya memperkenalkan dasar pengembangan web, tetapi juga membiasakan mahasiswa dengan praktik terbaik yang sesuai dengan kebutuhan dunia kerja.
 
 6. Apakah ada feedback untuk asisten dosen tutorial 1 yang telah kamu kerjakan sebelumnya? tidak ada hehe
+
+# Tugas 3
