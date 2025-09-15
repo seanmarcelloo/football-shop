@@ -42,3 +42,34 @@ Django sering dijadikan framework pertama dalam pembelajaran pengembangan perang
 6. Apakah ada feedback untuk asisten dosen tutorial 1 yang telah kamu kerjakan sebelumnya? tidak ada hehe
 
 # Tugas 3
+
+1. Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?
+Data delivery diperlukan agar setiap bagian dalam sebuah platform, seperti tampilan depan (frontend), server (backend), dan layanan pihak ketiga, dapat saling bertukar informasi dengan cara yang teratur dan aman, sehingga proses komunikasi dan integrasi sistem berjalan lancar.
+
+2. Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?
+JSON lebih populer dibanding XML karena formatnya lebih sederhana, mudah dibaca, ukuran datanya lebih kecil, dan lebih cepat diproses, terutama di JavaScript, sedangkan XML cenderung panjang dan lebih rumit meskipun cocok untuk dokumen yang kompleks.
+
+3. Jelaskan fungsi dari method is_valid() pada form Django dan mengapa kita membutuhkan method tersebut?
+is_valid() berfungsi untuk memeriksa apakah data yang diisi pada form sudah benar dan sesuai aturan, lalu menyediakan data yang sudah bersih agar dapat disimpan ke database tanpa kesalahan.
+
+4. Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
+csrf_token digunakan untuk melindungi aplikasi dari serangan Cross-Site Request Forgery dengan memberikan token unik pada setiap form, sehingga permintaan yang tidak sah dari pihak luar akan ditolak dan data pengguna tetap aman. Jika csrf_token  tidak ditambahkan, aplikasi rentan serangan CSRF di mana penyerang bisa membuat pengguna yang sedang login mengirim permintaan palsu (misalnya mengubah data atau melakukan transaksi) karena server mengira permintaan tersebut sah.
+
+5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+Dari tutorial sebelumnya, saya membuat skeleton terlebih dahulu sebagai kerangka views. Saya membuat direktori templates pada root folder dengan base.html dan melakukan penambahan direktori tersebut pada TEMPLATES di settings.py.
+
+Lalu, saya membbuat struktur form pada forms.py yang memiliki fields: "name", "price", "description", "thumbnail", "category", "is_featured". Kemudian, saya membuat fungsi pada views.py: create_product untuk menambahkan data Product ketika data disubmit dari form dan show_product untuk menampilkan informasi detail produk. Fungsi tersebut saya import ke urls.py dan menambahkan path URL pada urlpattens.
+
+Saya memperbarui main.html; menambahkan tombol add untuk mendirect ke halaman menambah produk serta menampilkan semua produk yang sudah ditambahkan dan menambahkan tombol detail untuk mendirect pada halaman detail produk.
+Saya juga membuat file html baru: create_product.html untuk halaman form input dan product_detail.html dan detail produk.
+
+Untuk mengembalikan data dalam bentuk xml dan json, pertama saya melakukan import HttpResponse dan Serializer. Pada views.py, saya membuat fungsi show_xml yang mereturn HttpResponse yang berisi parameter data hasil query yang sudah diserialisasi menjadi XML dan juga fungsi show_json yang mereturn HttpResponse yang berisi parameter data hasil query yang sudah diserialisasi menjadi JSON.
+Lalu saya mengimport fungsi tersebut pada  urls.py dan menambahakn path url untuk mengakses fungsi tersebut.
+
+
+Terakhir, pada views.py juga saya membuat fungsi baru yang menerima parameter request dan news_id dengan nama show_xml_by_id dan show_json_by_id. Di dalam fungsi tersebut, saya membuat sebuah variabel product_item untuk menyimpamn hasil query dari daata dengan id tertentu pada Product. Hasil return fungsi tersebut adalah berupa HttpResponse yang berisi parameter data hasil query yang sudah diserialisasi menjadi JSON atau XML. Saya juga membuat try except untuk mengantisipasi jika data tidak ditemukan dalam basis data. Lalu, saya mengimport fungsi tersebut dan menamabhakn path url pada urls.py
+
+
+6. Apakah ada feedback untuk asdos di tutorial 2 yang sudah kalian kerjakan? tidak ada hehe
+
+Screenshot Postman:
