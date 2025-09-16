@@ -73,3 +73,9 @@ Terakhir, pada views.py juga saya membuat fungsi baru yang menerima parameter re
 6. Apakah ada feedback untuk asdos di tutorial 2 yang sudah kalian kerjakan? tidak ada hehe
 
 Screenshot Postman:
+
+XML:
+![alt text](image.png)
+
+JSON:
+![alt text](<Screenshot 2025-09-16 120640.png>)
