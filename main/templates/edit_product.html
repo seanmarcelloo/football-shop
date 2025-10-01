@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block meta %}
-<title>Create Product - FootyBall</title>
+<title>Edit Product - FootyBall</title>
 {% endblock meta %}
 
 {% block content %}
@@ -17,7 +19,7 @@
     <!-- Form -->
     <div class="bg-white rounded-lg border border-gray-200 p-6 sm:p-8 form-style">
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">Create New Product</h1>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Edit Product</h1>
       </div>
       
       <form method="POST" class="space-y-6">
@@ -44,7 +46,7 @@
             Cancel
           </a>
           <button type="submit" class="order-1 sm:order-2 flex-1 bg-red-600 text-white px-6 py-3 rounded-md font-medium hover:bg-red-700 transition-colors">
-            Add Product for Sale
+            Update Product
           </button>
         </div>
       </form>

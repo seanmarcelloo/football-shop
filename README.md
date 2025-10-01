@@ -149,3 +149,55 @@ Terakhir, pada product_details.html, saya menambahkan informasi nama merchant ya
 d. Membuat dua (2) akun pengguna dengan masing-masing tiga (3) dummy data menggunakan model yang telah dibuat sebelumnya untuk setiap akun di lokal.
 
 buat dulu akun pengguna dan passwordnya (register), lalu login dengan username dan password yang telah dibuat. Buat product dengan klik tombol Add dan masukkan detail product. setelah selesai klik Add Product. Lakukan 3 kali. Setelah itu, buat lagi akun baru dan ulangi seperti sebelumnya :D
+
+# Tugas 5
+
+1. Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+Ketika ada beberapa CSS selector yang berlaku pada satu elemen, browser akan memilih yang paling spesifik. Urutannya dimulai dari inline style, lalu ID selector, kemudian class, pseudo-class, atau attribute selector, dan terakhir element selector seperti div atau p. Jika dua selector memiliki tingkat spesifisitas yang sama, maka aturan yang ditulis paling akhir di file CSS akan dipakai. Jadii, semakin spesifik selector yang digunakan, semakin tinggi prioritasnya dalam menentukan gaya elemen.
+
+2. Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design, serta jelaskan mengapa!
+Responsive design penting karena membuat tampilan web menyesuaikan ukuran layar pengguna, baik di laptop, tablet, maupun smartphone. Jika sebuah web tidak responsive, maka di perangkat kecil seperti HP tampilannya bisa berantakan, teks sulit dibaca, dan tombol susah diklik. 
+Contoh aplikasi yang sudah menerapkan responsive design adalah Instagram, yang pada layar laptop menampilkan galeri dalam beberapa kolom, tetapi otomatis menjadi satu kolom ketika dibuka di HP. Sebaliknya, banyak website lama atau forum jadul tidak responsive, sehingga harus digeser ke kanan-kiri di HP. Dengan semakin banyaknya orang yang mengakses web lewat smartphone, responsive design menjadi hal yang wajib agar pengalaman pengguna tetap nyaman.
+
+3. Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+Margin adalah jarak di luar elemen, yaitu ruang kosong antara elemen satu dengan elemen lainnya. Border adalah garis atau batas di sekeliling elemen yang memisahkan isi elemen dengan area di luar elemen. Sementara padding adalah jarak antara isi elemen dengan border. Misalnya, jika kita membuat sebuah kotak dengan teks, padding akan memberi ruang di dalam kotak agar teks tidak menempel ke tepi border, border akan menjadi garis pembatas kotak, dan margin akan memberi jarak kotak tersebut dari elemen lain di sekitarnya.
+
+Implementasi margin:
+.box {
+  margin: 20px;         /* jarak semua sisi 20px */
+  margin-top: 10px;     /* jarak atas */
+  margin-right: 15px;   /* jarak kanan */
+  margin-bottom: 20px;  /* jarak bawah */
+  margin-left: 5px;     /* jarak kiri */
+}
+
+implementasi border:
+.box {
+  border: 2px solid black;        /* border hitam tebal 2px */
+  border-radius: 8px;             /* sudut kotak dibulatkan */
+  border-top: 3px dashed red;     /* border atas saja, garis putus-putus */
+}
+
+implementasi padding:
+.box {
+  padding: 15px;          /* jarak semua sisi 15px */
+  padding-top: 10px;      /* jarak atas */
+  padding-right: 20px;    /* jarak kanan */
+  padding-bottom: 10px;   /* jarak bawah */
+  padding-left: 5px;      /* jarak kiri */
+}
+
+4. Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+Flexbox dan grid layout adalah dua cara modern untuk mengatur tata letak di CSS. Flexbox digunakan untuk mengatur elemen dalam satu dimensi, baik secara baris maupun kolom. Dengan flexbox, kita bisa dengan mudah membuat elemen sejajar, rata tengah, atau mendistribusikan ruang antar elemen. Misalnya, navbar dengan menu yang sejajar rapi bisa dibuat dengan flexbox. Sementara itu, grid layout bekerja dalam dua dimensi, yaitu baris dan kolom sekaligus. Grid sangat cocok untuk membuat layout yang kompleks seperti galeri foto, dashboard, atau halaman dengan banyak bagian berbeda. Intinya, flexbox lebih cocok untuk tata letak sederhana satu arah, sedangkan grid lebih kuat jika kita butuh struktur yang lebih kompleks dan dua arah.
+
+5. Cara implementasi checklist:
+Untuk membuat tombol edit dan delete, saya membuat fungsi edit_product dan delete_product di views.py, lalu mengimpornya di urls.py dan menambahkan path url untuk mengakses fungsi tersbut. Setelahnya saya menambahkan kode untuk menamabhakna tombol keduanya untuk setiap produk di main.html.
+
+Untuk tugas ini saya menggunkana framework Tailwind.
+Pertama, saya menambahkan script cdn tailwind di dalma tag head pada base.html.
+
+Lalu di templates yg berada di root directory, saya menambahkan file navbar,html untuk menmbuat naigation bar yang berfngsi untuk memfilter semua produk berdasarkan categorynya. Untuk dekstop, saya buat menjajar secara horizontal, lalu untuk mobile saya buat dengan tombol hamburger.
+
+Pada settings,py, saya tambahkan middleware WhiteNoise. Lalu saya menambahkan file global.css di /static/css dan juga menghubungkannya ke base.html.
+
+Lalu saya melakuknan styling pada halaman login, register, home, product detail, create product, dan edit product. Untuk card product, saya membuat style di mana di pojok kiri atas produk akan ada basge featured (jika ada), lalu di bawahnya terdapat badge category, nama produk, harga. Di paling bawahnya ada tombol view details, atau edit dan delete jika productnya adalah milik user.

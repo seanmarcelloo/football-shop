@@ -13,7 +13,8 @@ class Product(models.Model):
         ('accessories', 'Accessories'),
         ('merchandise', 'Merchandise'),
     ]
-    
+
+    # uuid = models.UUIDField()
     name = models.CharField(max_length=255)
     price = models.IntegerField()
     description = models.TextField()
@@ -25,9 +26,16 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
-class Employee(models.Model):
-    name = models.CharField(max_length=255)
-    age = models.IntegerField()
-    persona = models.TextField()
+# class Employee(models.Model):
+#     name = models.CharField(max_length=255)
+#     age = models.IntegerField()
+#     persona = models.TextField()
 
-    
+# class Book(models.Model):
+#     id = models.UUIDField()
+#     name  = models.CharField(max_length=255)
+
+# class Author(models.Model):
+#     bio = models.TextField()
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+#     books  = models.ManyToManyField(Book, on_delete = models.CASCADE, null=True)
