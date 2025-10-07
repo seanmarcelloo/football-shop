@@ -11,13 +11,13 @@
 
       <!-- Desktop Navigation -->
       <div class="hidden md:flex items-center space-x-6 mx-auto">
-        <a href="/" 
-           class="{% if not active_category %}text-red-600 font-bold bg-red-50 px-3 py-1 rounded{% else %}text-gray-600{% endif %} hover:text-red-600 transition-colors">
-          Home
-        </a>
+        <a href="?filter={{ request.GET.filter|default:'all' }}"
+        class="{% if not active_category %}text-red-600 font-bold bg-red-50 px-3 py-1 rounded{% else %}text-gray-600{% endif %} hover:text-red-600 transition-colors">
+        Home
+      </a>
         {% for key, value in categories %}
-          <a href="?category={{ key }}" 
-             class="{% if active_category == key %}text-red-600 font-bold bg-red-50 px-3 py-1 rounded{% else %}text-gray-600{% endif %} hover:text-red-600 transition-colors">
+          <a href="?filter={{ request.GET.filter|default:'all' }}&category={{ key }}" 
+            class="{% if active_category == key %}text-red-600 font-bold bg-red-50 px-3 py-1 rounded{% else %}text-gray-600{% endif %} hover:text-red-600 transition-colors">
             {{ value }}
           </a>
         {% endfor %}
