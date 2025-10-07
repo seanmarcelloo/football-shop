@@ -8,14 +8,14 @@ function showToast(title, message, type = 'normal', duration = 3000) {
     // Remove all type classes first
     toastComponent.classList.remove(
         'bg-red-50', 'border-red-500', 'text-red-600',
-        'bg-green-50', 'border-green-500', 'text-green-600',
+        'bg-blue-50', 'border-blue-500', 'text-blue-600',
         'bg-white', 'border-gray-300', 'text-gray-800'
     );
 
     // Set type styles and icon
     if (type === 'success') {
-        toastComponent.classList.add('bg-green-50', 'border-green-500', 'text-green-600');
-        toastComponent.style.border = '1px solid #22c55e';
+        toastComponent.classList.add('bg-blue-50', 'border-blue-500', 'text-blue-600');
+        toastComponent.style.border = '1px solid #00a2ff';
     } else if (type === 'error') {
         toastComponent.classList.add('bg-red-50', 'border-red-500', 'text-red-600');
         toastComponent.style.border = '1px solid #ef4444';

@@ -12,5 +12,8 @@
     {% block content %} {% endblock content %}
     {% include 'toast.html' %}
     {% include 'modal.html' %}
+    <form id="csrf-form" style="display:none;">
+      {% csrf_token %}
+    </form>
   </body>
 </html>

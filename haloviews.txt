@@ -1,0 +1,214 @@
+import datetime
+from django.urls import reverse
+from django.http import HttpResponse, JsonResponse
+from django.core import serializers
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST, require_http_methods
+from main.forms import ProductForm
+from main.models import Product
+
+
+# ---------------------------
+# UTIL FUNCTIONS
+# ---------------------------
+
+def _product_to_dict(p: Product):
+    return {
+        "id": str(p.id),
+        "name": p.name,
+        "price": p.price,
+        "description": p.description,
+        "category": p.category,
+        "thumbnail": p.thumbnail,
+        "added_at": p.added_at.isoformat() if p.added_at else None,
+        "is_featured": p.is_featured,
+        "user_id": p.user_id,
+        "user_username": getattr(p.user, "username", None) if p.user_id else None,
+    }
+
+
+def _filter_queryset_by_query_params(qs, request):
+    filter_type = request.GET.get("filter", "all")
+    category_filter = request.GET.get("category")
+
+    if filter_type != "all" and request.user.is_authenticated:
+        qs = qs.filter(user=request.user)
+    if category_filter:
+        qs = qs.filter(category=category_filter)
+    return qs
+
+
+# ---------------------------
+# PAGE VIEWS
+# ---------------------------
+
+@login_required(login_url="/login")
+def show_main(request):
+    filter_type = request.GET.get("filter", "all")
+    category_filter = request.GET.get("category", None)
+
+    if filter_type == "all":
+        product_list = Product.objects.all()
+    else:
+        product_list = Product.objects.filter(user=request.user)
+
+    if category_filter:
+        product_list = product_list.filter(category=category_filter)
+
+    context = {
+        "nama_aplikasi": "FootyBall Shop",
+        "npm": "2406401792",
+        "nama": "Sean Marcello Maheron",
+        "kelas": "PBP F",
+        "product_list": product_list,
+        "last_login": request.COOKIES.get("last_login", "Never"),
+        "current_user": request.COOKIES.get("current_user", "Anonymous"),
+        "active_category": category_filter,
+        "categories": Product.CATEGORY_CHOICES,
+    }
+    return render(request, "main.html", context)
+
+
+@login_required(login_url="/login")
+def show_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    return render(request, "product_detail.html", {"product": product})
+
+
+# ---------------------------
+# DATA SERIALIZATION (JSON/XML)
+# ---------------------------
+
+@require_http_methods(["GET"])
+def products_json(request):
+    qs = _filter_queryset_by_query_params(Product.objects.all().select_related("user"), request)
+    data = [_product_to_dict(p) for p in qs]
+    return JsonResponse(data, safe=False)
+
+
+@require_http_methods(["GET"])
+def product_detail_json(request, product_id):
+    try:
+        p = Product.objects.select_related("user").get(pk=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({"detail": "Not found"}, status=404)
+    return JsonResponse(_product_to_dict(p), safe=False)
+
+
+def show_json(request):
+    return products_json(request)
+
+
+# ---------------------------
+# AUTH AJAX
+# ---------------------------
+
+@require_POST
+def register_ajax(request):
+    form = UserCreationForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({"ok": False, "errors": form.errors}, status=400)
+    form.save()
+    return JsonResponse({"ok": True, "message": "Registered"})
+
+
+@require_POST
+def login_ajax(request):
+    form = AuthenticationForm(data=request.POST)
+    if not form.is_valid():
+        return JsonResponse({"ok": False, "errors": form.errors}, status=400)
+
+    user = form.get_user()
+    login(request, user)
+    resp = JsonResponse({"ok": True, "message": f"Welcome, {user.username}!"})
+    resp.set_cookie("last_login", str(datetime.datetime.now()))
+    resp.set_cookie("current_user", user.username)
+    return resp
+
+
+@require_POST
+def logout_ajax(request):
+    logout(request)
+    resp = JsonResponse({"ok": True, "message": "You have been logged out."})
+    resp.delete_cookie("last_login")
+    resp.delete_cookie("current_user")
+    return resp
+
+
+# ---------------------------
+# PRODUCT CRUD AJAX
+# ---------------------------
+
+@login_required(login_url="/login")
+@require_POST
+def product_create_ajax(request):
+    name = request.POST.get("name", "").strip()
+    price_str = request.POST.get("price", "").strip()
+    description = request.POST.get("description", "").strip()
+    category = request.POST.get("category", "merchandise").strip()
+    thumbnail = request.POST.get("thumbnail", "").strip()
+    is_featured = request.POST.get("is_featured") in ("on", "true", "1", "True")
+
+    if not name or not price_str or not description:
+        return JsonResponse({"error": "Incomplete data"}, status=400)
+
+    try:
+        price = int(price_str)
+    except ValueError:
+        return JsonResponse({"error": "Invalid price format"}, status=400)
+
+    p = Product.objects.create(
+        name=name,
+        price=price,
+        description=description,
+        category=category,
+        thumbnail=thumbnail or None,
+        is_featured=is_featured,
+        user=request.user,
+    )
+    return JsonResponse({"message": "created", "product": _product_to_dict(p)}, status=201)
+
+
+@login_required(login_url="/login")
+@require_http_methods(["POST"])
+def product_update_ajax(request, product_id):
+    p = get_object_or_404(Product, pk=product_id)
+    if p.user_id and p.user_id != request.user.id:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    name = request.POST.get("name", "").strip()
+    price_str = request.POST.get("price", "").strip()
+    description = request.POST.get("description", "").strip()
+    category = request.POST.get("category", "").strip()
+    thumbnail = request.POST.get("thumbnail", "").strip()
+    is_featured = request.POST.get("is_featured") in ("on", "true", "1", "True")
+
+    if name:
+        p.name = name
+    if price_str:
+        try:
+            p.price = int(price_str)
+        except ValueError:
+            return JsonResponse({"error": "Invalid price format"}, status=400)
+    if description:
+        p.description = description
+    if category:
+        p.category = category
+    p.thumbnail = thumbnail or None
+    p.is_featured = is_featured
+    p.save()
+
+    return JsonResponse({"message": "updated", "product": _product_to_dict(p)}, status=200)
+
+
+@login_required(login_url="/login")
+@require_http_methods(["POST"])
+def product_delete_ajax(request, product_id):
+    p = get_object_or_404(Product, pk=product_id)
+    if p.user_id and p.user_id != request.user.id:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+    p.delete()
+    return JsonResponse({"message": "deleted"}, status=200)

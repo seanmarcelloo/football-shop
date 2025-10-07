@@ -17,10 +17,16 @@
       <p class="text-gray-600">Discover the newest arrivals in football gear and apparel.</p>
     </div>
 
-    <!-- Button to open modal -->
-    <button onclick="showModal()" class="inline-flex items-center px-4 py-2 bg-white text-red-600 font-semibold outline outline-2 outline-red-600 outline-offset-[-2px] rounded-md hover:bg-red-600 hover:text-white transition-colors mb-4">
-      Add Product
+    <!-- Button -->
+    <!-- <div class="flex flex-wrap items-center gap-3 mb-4"></div> -->
+      <button onclick="showModal()" class="inline-flex items-center px-4 py-2 bg-white text-red-600 font-semibold outline outline-2 outline-red-600 outline-offset-[-2px] rounded-md hover:bg-red-600 hover:text-white transition-colors mb-4">
+        Add Product
+      </button>
+      <button onclick="fetchProductFromServer()" 
+      class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 font-medium border border-blue-200 rounded-md hover:bg-blue-100 hover:text-blue-800 transition-colors mb-4">
+      Refresh
     </button>
+    <!-- </div> -->
 
     <!-- Filter Section -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-white rounded-lg border border-gray-200 p-4">
@@ -147,7 +153,7 @@ function buildProductCardElement(p) {
     '00000000-0000-0000-0000-000000000000',
     p.id
   );
-  const editLink = `{% url 'main:edit_product' '00000000-0000-0000-0000-000000000000' %}`.replace(
+  const editLink = `{% url 'main:edit_product_ajax' '00000000-0000-0000-0000-000000000000' %}`.replace(
     '00000000-0000-0000-0000-000000000000',
     p.id
   );
@@ -180,22 +186,25 @@ function buildProductCardElement(p) {
     </div>`;
 
   const ownerButtons =
-    CURRENT_USER_ID && String(CURRENT_USER_ID) === String(p.user_id)
-      ? `<div class="flex space-x-2 mt-2">
-           <a href="${editLink}" 
-              class="flex-1 px-3 py-2 text-xs text-center rounded bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
-              Edit
-           </a>
-           <a href="${deleteLink}" 
-              class="flex-1 px-3 py-2 text-xs text-center rounded bg-red-600 text-white hover:bg-red-700 transition"
-              onclick='return confirm("Are you sure you want to delete this product?")'>
-              Delete
-           </a>
-         </div>`
-      : `<a href="${detailLink}" 
-              class="block w-full text-center mt-2 px-3 py-2 text-sm rounded bg-red-600 text-white hover:bg-red-700 transition">
-              View Details
-         </a>`;
+  CURRENT_USER_ID && String(CURRENT_USER_ID) === String(p.user_id)
+    ? `<div class="flex space-x-2 mt-2">
+          <!-- Tombol EDIT  -->
+          <button onclick='showModal(${JSON.stringify(p)})' 
+                  class="flex-1 px-3 py-2 text-xs text-center rounded bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
+            Edit
+          </button>
+
+          <!-- Tombol DELETE  -->
+          <button onclick='showDeleteModal("${p.id}")' 
+                  class="flex-1 px-3 py-2 text-xs text-center rounded bg-red-600 text-white hover:bg-red-700 transition">
+            Delete
+          </button>
+        </div>`
+    : `<a href="${detailLink}" 
+            class="block w-full text-center mt-2 px-3 py-2 text-sm rounded bg-red-600 text-white hover:bg-red-700 transition">
+            View Details
+        </a>`;
+
 
   article.innerHTML = `
     <!-- Thumbnail -->
@@ -310,4 +319,3 @@ document.addEventListener('productAdded', function() {
 </script>
 
 {% endblock content %}
-

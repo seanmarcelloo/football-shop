@@ -16,19 +16,6 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-def _product_to_dict(p: Product):
-    return {
-        "id": str(p.id),
-        "name": p.name,
-        "price": p.price,
-        "description": p.description,
-        "category": p.category,
-        "thumbnail": p.thumbnail,
-        "added_at": p.added_at.isoformat() if p.added_at else None,
-        "is_featured": p.is_featured,
-        "user_id": p.user_id,
-        "user_username": getattr(p.user, "username", None) if p.user_id else None,
-    }
 
 @login_required(login_url='/login')
 def show_main(request):
@@ -192,19 +179,19 @@ def logout_user(request):
     response.delete_cookie('current_user')
     return response
 
-def edit_product(request, id):
-    product = get_object_or_404(Product, pk=id)
-    form = ProductForm(request.POST or None, instance=product)
-    if form.is_valid() and request.method == 'POST':
-        form.save()
-        return redirect('main:show_main')
+# def edit_product(request, id):
+#     product = get_object_or_404(Product, pk=id)
+#     form = ProductForm(request.POST or None, instance=product)
+#     if form.is_valid() and request.method == 'POST':
+#         form.save()
+#         return redirect('main:show_main')
 
-    context = {
-        'form': form
-    }
+#     context = {
+#         'form': form
+#     }
+#     return render(request, "edit_product.html", context)
 
-    return render(request, "edit_product.html", context)
-
+@csrf_exempt
 def delete_product(request, id):
     product = get_object_or_404(Product, pk=id)
     product.delete()
@@ -252,3 +239,47 @@ def add_product_entry_ajax(request):
         }, status=201)
 
     return JsonResponse({"error": "Invalid request"}, status=405)
+
+@require_POST
+def edit_product_ajax(request, id):
+    p = get_object_or_404(Product, pk=id)
+    if p.user_id and p.user_id != request.user.id:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    name = request.POST.get("name", "").strip()
+    price_str = request.POST.get("price", "").strip()
+    description = request.POST.get("description", "").strip()
+    category = request.POST.get("category", "").strip()
+    thumbnail = request.POST.get("thumbnail", "").strip()
+    is_featured = request.POST.get("is_featured") in ("on", "true", "1", "True")
+
+    if name:
+        p.name = name
+    if price_str:
+        try:
+            p.price = int(price_str)
+        except ValueError:
+            return JsonResponse({"error": "Invalid price format"}, status=400)
+    if description:
+        p.description = description
+    if category:
+        p.category = category
+    p.thumbnail = thumbnail or None
+    p.is_featured = is_featured
+    p.save()
+
+    return JsonResponse({"message": "updated", "product": _product_to_dict(p)}, status=200)
+
+def _product_to_dict(p: Product):
+    return {
+        "id": str(p.id),
+        "name": p.name,
+        "price": p.price,
+        "description": p.description,
+        "category": p.category,
+        "thumbnail": p.thumbnail,
+        "added_at": p.added_at.isoformat() if p.added_at else None,
+        "is_featured": p.is_featured,
+        "user_id": p.user_id,
+        "user_username": getattr(p.user, "username", None) if p.user_id else None,
+    }
