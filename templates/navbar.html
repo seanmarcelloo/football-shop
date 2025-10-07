@@ -30,11 +30,12 @@
             <div class="text-sm font-medium text-gray-900">{{ nama|default:user.username }}</div>
             <div class="text-xs text-gray-500">{{ npm|default:"Student" }} - {{ kelas|default:"Class" }}</div>
           </div>
-          <a href="{% url 'main:logout' %}" class="text-red-600 hover:text-red-700 font-medium transition-colors">
+          <button onclick="logoutUser()" 
+                  class="text-red-600 hover:text-red-700 font-medium transition-colors">
             Logout
-          </a>
+          </button>
         {% else %}
-          <a href="{% url 'main:login' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+          <a href="{% url 'main:login_user' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
             Login
           </a>
           <a href="{% url 'main:register' %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-medium transition-colors">
@@ -82,11 +83,12 @@
         <div class="font-medium text-gray-900">{{ nama|default:user.username }}</div>
         <div class="text-sm text-gray-500">{{ npm|default:"Student" }} - {{ kelas|default:"Class" }}</div>
       </div>
-      <a href="{% url 'main:logout' %}" class="block text-red-600 hover:text-red-700 font-medium py-2">
+      <button onclick="logoutUser()" 
+        class="block text-red-600 hover:text-red-700 font-medium py-2 w-full text-left">
         Logout
-      </a>
+      </button>
     {% else %}
-      <a href="{% url 'main:login' %}" class="block text-gray-600 hover:text-gray-900 font-medium py-2">
+      <a href="{% url 'main:login_user' %}" class="block text-gray-600 hover:text-gray-900 font-medium py-2">
         Login
       </a>
       <a href="{% url 'main:register' %}" class="block bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded text-center transition-colors">
@@ -136,4 +138,22 @@
   overlay.addEventListener("click", () => {
     hamburger.click();
   });
+
+  async function logoutUser() {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+    try {
+      const res = await fetch("{% url 'main:logout_user' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": csrfToken },
+      });
+      const data = await res.json();
+      if (!res.ok) throw data;
+
+      showToast("Logged Out", data.message, "success");
+      setTimeout(() => (window.location.href = "{% url 'main:login_user' %}"), 1000);
+    } catch (err) {
+      console.error(err);
+      showToast("Error", err.error || "Logout failed", "error");
+    }
+  }
 </script>

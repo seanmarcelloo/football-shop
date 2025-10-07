@@ -14,32 +14,8 @@
         <p class="text-gray-500">Create your FootyBall account</p>
       </div>
 
-      <!-- Form Errors Display -->
-      {% if form.non_field_errors %}
-        <div class="mb-6">
-          {% for error in form.non_field_errors %}
-            <div class="px-4 py-3 rounded text-sm border bg-red-50 border-red-200 text-red-700">
-              {{ error }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      {% if form.errors %}
-        <div class="mb-6">
-          {% for field, errors in form.errors.items %}
-            {% if field != '__all__' %}
-              {% for error in errors %}
-                <div class="px-4 py-3 rounded text-sm border bg-red-50 border-red-200 text-red-700 mb-2">
-                  <strong>{{ field|title }}:</strong> {{ error }}
-                </div>
-              {% endfor %}
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      <form method="POST" action="" class="space-y-5">
+      <!-- Form -->
+      <form id="registerForm" onsubmit="return false;" class="space-y-5">
         {% csrf_token %}
         
         <div>
@@ -76,37 +52,17 @@
         </div>
 
         <button 
-          type="submit" 
+          type="button" 
+          onclick="registerUser()" 
           class="w-full bg-red-600 text-white font-medium py-3 px-4 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200">
           Create Account
         </button>
       </form>
 
-      <!-- Messages Display -->
-      {% if messages %}
-        <div class="mt-6">
-          {% for message in messages %}
-            <div 
-              class="
-                px-4 py-3 rounded text-sm border
-                {% if message.tags == 'success' %}
-                  bg-red-50 border-red-200 text-red-700
-                {% elif message.tags == 'error' %}
-                  bg-red-50 border-red-200 text-red-700
-                {% else %}
-                  bg-gray-50 border-gray-200 text-gray-700
-                {% endif %}
-              ">
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
       <div class="mt-6 text-center">
         <p class="text-gray-500 text-sm">
           Already have an account? 
-          <a href="{% url 'main:login' %}" class="text-red-600 hover:text-red-700 font-medium">
+          <a href="{% url 'main:login_user' %}" class="text-red-600 hover:text-red-700 font-medium">
             Sign In
           </a>
         </p>
@@ -115,4 +71,37 @@
     </div>
   </div>
 </div>
+
+<script>
+async function registerUser() {
+  const form = document.getElementById("registerForm");
+  const formData = new FormData(form);
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  try {
+    // Kirim AJAX ke endpoint Django
+    const response = await fetch("{% url 'main:register' %}", {
+      method: "POST",
+      headers: { "X-CSRFToken": csrfToken },
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw data;
+
+    // Jika sukses
+    showToast("Registration Successful", data.message || "Your account has been created!", "success");
+
+    // Redirect ke halaman login setelah 1.5 detik
+    setTimeout(() => {
+      window.location.href = "{% url 'main:login_user' %}";
+    }, 1500);
+
+  } catch (err) {
+    // Jika gagal
+    console.error("Register error:", err);
+    showToast("Registration Failed", err.error || "Please check your input.", "error");
+  }
+}
+</script>
 {% endblock content %}

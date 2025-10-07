@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
@@ -17,7 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 
-@login_required(login_url='/login')
+# @login_required(login_url='/login')
 def show_main(request):
 
     filter_type = request.GET.get("filter", "all")
@@ -57,7 +58,7 @@ def create_product(request):
     context = {'form': form}
     return render(request, "create_product.html", context)
 
-@login_required(login_url='/login')
+# @login_required(login_url='/login')
 def show_product(request, id):
     product = get_object_or_404(Product, pk=id)
 
@@ -143,38 +144,84 @@ def show_json_by_id(request, product_id):
         return JsonResponse({'detail': 'Not found'}, status=404)
 
 
+# def register(request):
+#     form = UserCreationForm()
+
+#     if request.method == "POST":
+#         form = UserCreationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Your account has been successfully created!')
+#             return redirect('main:login')
+#     context = {'form':form}
+#     return render(request, 'register.html', context)
+
+@csrf_exempt
 def register(request):
-    form = UserCreationForm()
-
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your account has been successfully created!')
-            return redirect('main:login')
-    context = {'form':form}
-    return render(request, 'register.html', context)
+        username = request.POST.get("username", "").strip()
+        password1 = request.POST.get("password1", "").strip()
+        password2 = request.POST.get("password2", "").strip()
 
+        if not username or not password1 or not password2:
+            return JsonResponse({"error": "All fields are required."}, status=400)
+        if password1 != password2:
+            return JsonResponse({"error": "Passwords do not match."}, status=400)
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"error": "Username already taken."}, status=400)
+
+        user = User.objects.create_user(username=username, password=password1)
+        user.save()
+        return JsonResponse({"message": "Account created successfully!"}, status=201)
+
+    return render(request, "register.html")
+
+# def login_user(request):
+#    if request.method == 'POST':
+#       form = AuthenticationForm(data=request.POST)
+
+#       if form.is_valid():
+#             user = form.get_user()
+#             login(request, user)
+#             response = HttpResponseRedirect(reverse("main:show_main"))
+#             response.set_cookie('last_login', str(datetime.datetime.now()))
+#             response.set_cookie('current_user', user.username)
+#             return response
+
+#    else:
+#       form = AuthenticationForm(request)
+#    context = {'form': form}
+#    return render(request, 'login.html', context)
+
+@csrf_exempt
 def login_user(request):
-   if request.method == 'POST':
-      form = AuthenticationForm(data=request.POST)
+    if request.method == "POST":
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "").strip()
 
-      if form.is_valid():
-            user = form.get_user()
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
             login(request, user)
-            response = HttpResponseRedirect(reverse("main:show_main"))
+            response = JsonResponse({"message": "Login successful!"})
             response.set_cookie('last_login', str(datetime.datetime.now()))
             response.set_cookie('current_user', user.username)
             return response
+        else:
+            return JsonResponse({"error": "Invalid username or password."}, status=401)
+    return render(request, "login.html")
 
-   else:
-      form = AuthenticationForm(request)
-   context = {'form': form}
-   return render(request, 'login.html', context)
+# def logout_user(request):
+#     logout(request)
+#     response = HttpResponseRedirect(reverse('main:login'))
+#     response.delete_cookie('last_login')
+#     response.delete_cookie('current_user')
+#     return response
 
+@csrf_exempt
+# @require_POST
 def logout_user(request):
     logout(request)
-    response = HttpResponseRedirect(reverse('main:login'))
+    response = JsonResponse({"message": "Logged out successfully!"})
     response.delete_cookie('last_login')
     response.delete_cookie('current_user')
     return response
@@ -191,11 +238,24 @@ def logout_user(request):
 #     }
 #     return render(request, "edit_product.html", context)
 
+# @csrf_exempt
+# def delete_product(request, id):
+#     product = get_object_or_404(Product, pk=id)
+#     product.delete()
+#     return HttpResponseRedirect(reverse('main:show_main'))
+
 @csrf_exempt
 def delete_product(request, id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
     product = get_object_or_404(Product, pk=id)
-    product.delete()
-    return HttpResponseRedirect(reverse('main:show_main'))
+
+    if request.user.is_authenticated and product.user == request.user:
+        product.delete()
+        return JsonResponse({"message": "Product deleted successfully!"}, status=200)
+    else:
+        return JsonResponse({"error": "Forbidden: you do not own this product."}, status=403)
 
 # @csrf_exempt: Menonaktifkan CSRF protection untuk request AJAX ini
 # @require_POST: Memastikan hanya HTTP POST yang diterima
