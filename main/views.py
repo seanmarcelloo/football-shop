@@ -217,8 +217,7 @@ def login_user(request):
 #     response.delete_cookie('current_user')
 #     return response
 
-@csrf_exempt
-# @require_POST
+@require_POST
 def logout_user(request):
     logout(request)
     response = JsonResponse({"message": "Logged out successfully!"})
@@ -244,7 +243,6 @@ def logout_user(request):
 #     product.delete()
 #     return HttpResponseRedirect(reverse('main:show_main'))
 
-@csrf_exempt
 def delete_product(request, id):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
@@ -259,7 +257,7 @@ def delete_product(request, id):
 
 # @csrf_exempt: Menonaktifkan CSRF protection untuk request AJAX ini
 # @require_POST: Memastikan hanya HTTP POST yang diterima
-@csrf_exempt
+@login_required
 @require_POST
 def add_product_entry_ajax(request):
     if request.method == "POST":
