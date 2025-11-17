@@ -4,7 +4,7 @@
   <div id="crudModalContent"
        class="bg-white rounded-lg shadow-lg w-5/6 sm:w-3/5 md:w-1/2 lg:w-2/5 xl:w-1/3 max-h-screen overflow-y-auto transform transition-all duration-200 opacity-0 scale-95">
 
-    <!-- Modal Header (opsional, bisa kosong atau disembunyikan) -->
+    <!-- Modal Header 
     <div id="modal-header" class="flex items-center justify-between p-4 border-b hidden">
       <div>
         <h3 id="modal-title" class="text-xl font-semibold text-gray-900"></h3>
@@ -19,7 +19,7 @@
                 clip-rule="evenodd"></path>
         </svg>
       </button>
-    </div>
+    </div> -->
 
     <!-- Modal body -->
     <div class="px-6 py-4 space-y-6 form-style">
@@ -96,7 +96,7 @@
   </div>
 </div>
 
-<!-- Model for Delete Confirmation -->
+<!-- Modal for Delete Confirmation -->
 <div id="delete-modal"
      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
   <div class="bg-white rounded-xl w-full max-w-sm p-6 text-center shadow-lg">
@@ -136,7 +136,7 @@
   function showModal(product = null) {
     const modal = document.getElementById("crudModal");
     const modalContent = document.getElementById("crudModalContent");
-    const header = document.getElementById("modal-header");
+    // const header = document.getElementById("modal-header");
     const submitBtn = document.getElementById("submitProduct");
     const form = document.getElementById("productForm");
     form.reset();
@@ -145,7 +145,7 @@
     editingProduct = product;
 
     // Sembunyikan header
-    header.classList.add("hidden");
+    // header.classList.add("hidden");
 
     if (product) {
       // Mode edit
