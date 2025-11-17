@@ -45,6 +45,7 @@
         <a id="filter-my" href="#" class="{% if request.GET.filter == 'my' %} bg-red-600 text-white{% else %}bg-white text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md font-medium transition-colors hover:bg-red-600 hover:text-white">
           My Product
         </a>
+
       </div>
       {% if user.is_authenticated %}
         <div class="text-sm text-gray-500">
@@ -179,8 +180,8 @@ function buildProductCardElement(p) {
 
   const featuredBadge = p.is_featured
     ? `<div class="absolute top-3 left-3">
-         <span class="inline-flex items-center px-3 py-1 text-xs font-bold rounded-full shadow-md 
-                      bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white tracking-wide">
+         <span style="background-color:red;" class="inline-flex items-center px-3 py-1 text-xs font-bold rounded-full shadow-md 
+                      bg-red-100 text-white tracking-wide">
            Featured
          </span>
        </div>`
